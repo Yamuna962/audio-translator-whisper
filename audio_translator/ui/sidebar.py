@@ -1,21 +1,43 @@
-import os
 import streamlit as st
 
-from audio_translator.config import LOGO_PATH
+from audio_translator.config import (
+    APP_TITLE,
+    LOGO_PATH
+)
+
 
 def render_sidebar():
 
     with st.sidebar:
 
-        if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width=280)
+        if LOGO_PATH:
 
-        st.title("🎤 Hindi Audio → English Translator")
+            try:
+                st.image(
+                    LOGO_PATH,
+                    use_container_width=True
+                )
+
+            except:
+                pass
+
+        st.title(APP_TITLE)
 
         st.markdown("---")
 
-        st.info("""
-        Upload Hindi audio
+        st.markdown(
+            """
+### Features
 
-        Get English transcription instantly
-        """)
+- Hindi Speech Recognition
+- English Translation
+- Whisper AI
+- Streamlit Interface
+
+---
+"""
+        )
+
+        st.info(
+            "Upload a Hindi audio file to begin."
+        )
