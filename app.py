@@ -1,13 +1,8 @@
-import os
 import streamlit as st
 
 from audio_translator.ui.sidebar import render_sidebar
-from audio_translator.ui.upload_section import (
-    render_upload_section
-)
-from audio_translator.ui.about_section import (
-    render_about
-)
+from audio_translator.ui.upload_section import render_upload_section
+from audio_translator.ui.about_section import render_about
 
 from audio_translator.utils.session_utils import (
     initialize_session_state
@@ -21,8 +16,10 @@ from audio_translator.services.transcription_service import (
     transcribe_audio
 )
 
+from audio_translator.config import APP_TITLE
+
 st.set_page_config(
-    page_title="Audio Translator",
+    page_title=APP_TITLE,
     layout="wide"
 )
 
@@ -30,33 +27,37 @@ initialize_session_state()
 
 render_sidebar()
 
-left_col, right_col = st.columns([3,1])
+left, right = st.columns([3,1])
 
-with left_col:
+with left:
 
     audio_path = render_upload_section()
 
     if (
-        audio_path and
+        audio_path
+        and
         not st.session_state.processing_complete
     ):
 
-        model = load_whisper_model()
+        with st.spinner("Transcribing..."):
 
-        results = transcribe_audio(
-            model,
-            audio_path
-        )
+            model = load_whisper_model()
 
-        st.session_state.transcription_results = (
-            results
-        )
+            results = transcribe_audio(
+                model,
+                audio_path
+            )
 
-        st.session_state.processing_complete = True
+            st.session_state.transcription_results = (
+                results
+            )
+
+            st.session_state.processing_complete = True
 
     if st.session_state.transcription_results:
 
         st.subheader("Hindi Transcription")
+
         st.write(
             st.session_state.transcription_results[
                 "hindi"
@@ -64,11 +65,13 @@ with left_col:
         )
 
         st.subheader("English Translation")
+
         st.write(
             st.session_state.transcription_results[
                 "english"
             ]
         )
 
-with right_col:
+with right:
+
     render_about()
